@@ -2,7 +2,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout as logoutApi, getUserInfo as userInfoApi } from '../../interface/interfaces';
-import { BASE_URL } from '../../const/base';
+import { BASE_URL, DEFAULT_IMAGE } from '../../const/base';
 import { Dropdown, MenuProps } from 'antd';
 
 interface UserInfoType {
@@ -76,7 +76,7 @@ export const UserInfo = () => {
       <div className="dsf aic jcc">
         {user?.nickName}
         <img
-          src={BASE_URL + user?.headPic}
+          src={BASE_URL + (user?.headPic || DEFAULT_IMAGE)}
           alt=""
           style={{ width: '50px', height: '50px', borderRadius: '50%' }}
         />
