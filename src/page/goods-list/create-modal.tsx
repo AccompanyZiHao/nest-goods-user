@@ -50,8 +50,12 @@ export function CreateModal(props: CreateModalProps) {
           {props.goods.name}
         </Form.Item>
 
+        <Form.Item label="库存数量" name="quantity">
+          {props.goods.num}
+        </Form.Item>
+
         <Form.Item
-          label="商品数量"
+          label="上架数量"
           name="quantity"
           rules={[{ required: true, message: 'Please input your quantity!' }]}
         >

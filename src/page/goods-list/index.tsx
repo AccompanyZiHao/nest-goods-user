@@ -28,6 +28,7 @@ export interface GoodsSearchResult {
   name: string;
   kind: number;
   img: string;
+  num: number;
   sellPrice: string;
   description: string;
   isSale: boolean;
