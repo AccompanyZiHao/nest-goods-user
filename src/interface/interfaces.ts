@@ -5,7 +5,6 @@ import { UpdatePassword } from '../page/update_password/UpdatePassword';
 import { UserInfo } from '../page/update_info/UpdateInfo';
 import { message } from 'antd';
 // import { SearchBooking } from "../page/booking_history/BookingHistory";
-import { CreateSaleOrderParams } from '../page/goods-list/create-modal';
 import { BASE_URL } from '../const/base';
 
 const axiosInstance = axios.create({
@@ -137,7 +136,7 @@ export async function inventoryList(
   pageNo: number,
   pageSize: number
 ) {
-  return await axiosInstance.get('/inventory/list', {
+  return await axiosInstance.get('/shelf-request/list', {
     params: {
       username: form.username,
       goodsName: form.meetingRoomName,
@@ -153,8 +152,12 @@ export async function unbind(id: number) {
   return await axiosInstance.get('/inventory/unbind/' + id);
 }
 
-export async function createSaleOrder(data: CreateSaleOrderParams) {
-  return await axiosInstance.post('/inventory/createSaleOrder', data);
+export async function createSaleOrder(data) {
+  return await axiosInstance.post('/shelf-request/create', data);
+}
+
+export async function categoryList() {
+  return await axiosInstance.get('/category/list');
 }
 
 export async function logout() {

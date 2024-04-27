@@ -21,3 +21,14 @@ code {
 .jcc{
   justify-content: center;
 }
+
+
+#container {
+    padding: 20px;
+}
+#container .form {
+    margin-bottom: 40px;
+}
+#container .ant-form-item {
+    margin: 10px;
+}

@@ -6,22 +6,23 @@ import {
   Popconfirm,
   Select,
   Table,
+  Tag,
   TimePicker,
   message,
 } from 'antd';
 import { useEffect, useState } from 'react';
 import { useForm } from 'antd/es/form/Form';
-import './booking_history.css';
 import { inventoryList, unbind } from '../../interface/interfaces';
 import { GoodsSearchResult } from '../goods-list/index';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { goodsTypeList } from '../../const/goodsType';
+import { getCategoryList } from '../../const/category';
 import { getUserInfo } from '../user-info';
+import { CategorySelect } from './CategorySelect';
 
 export interface SearchForm {
   goodsName: string;
-  location: string;
+  // location: string;
   goodsType: number;
 }
 
@@ -29,7 +30,7 @@ interface OnSaleListResult {
   id: number;
   startTime: string;
   endTime: string;
-  status: string;
+  request_status: number;
   note: string;
   createTime: string;
   updateTime: string;
@@ -77,7 +78,7 @@ export function OnSaleList() {
     searchHandle({
       goodsName: form.getFieldValue('goodsName'),
       goodsType: form.getFieldValue('goodsType'),
-      location: form.getFieldValue('location'),
+      // location: form.getFieldValue('location'),
     });
   }, [pageNo, pageSize, refresh]);
 
@@ -100,36 +101,25 @@ export function OnSaleList() {
         return record.goods.name;
       },
     },
-    {
-      title: '货架位置',
-      dataIndex: 'location',
-    },
+    // {
+    //   title: '货架位置',
+    //   dataIndex: 'location',
+    // },
     {
       title: '上架数量',
-      dataIndex: 'quantity',
+      dataIndex: 'request_quantity',
     },
     {
       title: '审核状态',
-      dataIndex: 'status',
-      onFilter: (value, record) => record.status.startsWith(value as string),
-      filters: [
-        {
-          text: '审核通过',
-          value: '审核通过',
-        },
-        {
-          text: '审核驳回',
-          value: '审核驳回',
-        },
-        {
-          text: '申请中',
-          value: '申请中',
-        },
-        {
-          text: '已解除',
-          value: '已解除',
-        },
-      ],
+      dataIndex: 'request_status',
+      render(_, record) {
+        return {
+          1: <Tag color="processing">等待中</Tag>,
+          2: <Tag color="success">成功</Tag>,
+          3: <Tag color="error">失败</Tag>,
+          4: <Tag color="default">已取消</Tag>,
+        }[record.request_status];
+      },
     },
     {
       title: '上架时间',
@@ -139,22 +129,22 @@ export function OnSaleList() {
       },
     },
     {
-      title: '描述',
-      dataIndex: 'description',
+      title: '备注',
+      dataIndex: 'note',
     },
     {
       title: '操作',
       render: (_, record) =>
-        record.status === '申请中' ? (
+        record.request_status === 1 ? (
           <div>
             <Popconfirm
-              title="解除申请"
+              title="撤回申请"
               description="确认解除吗？"
               onConfirm={() => changeStatus(record.id)}
               okText="Yes"
               cancelText="No"
             >
-              <a href="#">解除上架</a>
+              <a href="#">撤回申请</a>
             </Popconfirm>
           </div>
         ) : null,
@@ -162,8 +152,8 @@ export function OnSaleList() {
   ];
 
   return (
-    <div id="onSaleList-container">
-      <div className="onSaleList-form">
+    <div id="container">
+      <div className="form">
         <Form
           form={form}
           onFinish={searchHandle}
@@ -175,12 +165,13 @@ export function OnSaleList() {
             <Input />
           </Form.Item>
 
-          <Form.Item label="货架位置" name="location">
+          {/* <Form.Item label="货架位置" name="location">
             <Input />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item label="商品类型" name="goodsType" style={{ width: 200 }}>
-            <Select options={goodsTypeList}></Select>
+            {/* <Select options={}></Select> */}
+            <CategorySelect />
           </Form.Item>
 
           <Form.Item label=" ">
@@ -190,7 +181,7 @@ export function OnSaleList() {
           </Form.Item>
         </Form>
       </div>
-      <div className="onSaleList-table">
+      <div className="table">
         <Table
           columns={columns}
           dataSource={list}

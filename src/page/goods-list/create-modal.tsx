@@ -13,21 +13,23 @@ const layout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 18 }
 }
-
-export interface CreateSaleOrderParams {
+export interface CreateSelfRequestFormParams {
   goodsId: number;
   quantity: number;
-  location: number
+  location: number;
 }
 
 export function CreateModal(props: CreateModalProps) {
-  const [form] = useForm<CreateSaleOrderParams>();
+  const [form] = useForm<CreateSelfRequestFormParams>();
 
   const handleOk = async function () {
     const values = form.getFieldsValue();
     values.goodsId = props.goods.id;
 
-    const res = await createSaleOrder(values);
+    const res = await createSaleOrder({
+      ...values,
+      status: 1,
+    });
 
     if (res.status === 201 || res.status === 200) {
       message.success('上架成功，等待审核');
@@ -62,13 +64,13 @@ export function CreateModal(props: CreateModalProps) {
           <Input />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label="货架位置"
           name="location"
           rules={[{ required: true, message: 'Please input your location!' }]}
         >
           <Input />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item label="备注" name="note">
           <Input />
