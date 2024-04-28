@@ -3,22 +3,29 @@ import {
   Button,
   Form,
   Input,
+  Image,
   Select,
   Table,
   message,
   Modal,
+  Tag,
 } from 'antd';
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import './index.css';
-import { ColumnsType } from "antd/es/table";
-import { useForm } from "antd/es/form/Form";
+import { ColumnsType } from 'antd/es/table';
+import { useForm } from 'antd/es/form/Form';
 import {
   createSaleOrder,
   searchGoodsList,
   unbind,
 } from '../../interface/interfaces';
 import { CreateModal } from './create-modal';
-import { goodsTypeList } from '../../const/category';
+import {
+  CategorySelect,
+  getLocalCategoryData,
+} from '../operate-history/CategorySelect';
+import { BASE_URL, DEFAULT_IMAGE } from '../../const/base';
+import dayjs from 'dayjs';
 
 interface SearchGoods {
   name: string;
@@ -61,13 +68,16 @@ export function GoodsList() {
       {
         title: '商品类型',
         dataIndex: 'kind',
+        render: (_, record) => {
+          return <CategorySelect value={record.kind} disabled isText={true} />;
+        },
       },
       {
         title: '商品图片',
         dataIndex: 'img',
         render: (_, record) => (
           <div>
-            <img src={record.img} alt="" />
+            <Image width={100} src={BASE_URL + (record.img || DEFAULT_IMAGE)} />
           </div>
         ),
       },
@@ -82,26 +92,38 @@ export function GoodsList() {
       {
         title: '添加时间',
         dataIndex: 'createTime',
+        render(_, record) {
+          return dayjs(new Date(record.createTime)).format(
+            'YYYY-MM-DD hh:mm:ss'
+          );
+        },
       },
       {
         title: '上次更新时间',
         dataIndex: 'updateTime',
+        render(_, record) {
+          return dayjs(new Date(record.updateTime)).format(
+            'YYYY-MM-DD hh:mm:ss'
+          );
+        },
       },
       {
         title: '上架状态',
         dataIndex: 'isSale',
         render: (_, record) =>
-          record.isSale ? (
-            <Badge status="error">已上架</Badge>
-          ) : (
-            <Badge status="success">未上架</Badge>
-          ),
+          record.isSale ? <Tag color="success">已上架</Tag> : <Tag>未上架</Tag>,
       },
       {
         title: '操作',
         render: (_, record) => (
           <div onClick={() => onSaleHandler(record, record.isSale)}>
-            {record.isSale ? '下架' : '上架'}
+            {record.isSale ? (
+              <Button danger type="primary">
+                下架
+              </Button>
+            ) : (
+              <Button type="primary">上架</Button>
+            )}
           </div>
         ),
       },
@@ -159,7 +181,7 @@ export function GoodsList() {
         async onOk() {
           const res = await createSaleOrder({
             goodsId: record.id,
-            // quantity: 0,
+            quantity: 0,
             status: 2,
           });
           if (res.status === 201 || res.status === 200) {
@@ -187,12 +209,12 @@ export function GoodsList() {
             <Input />
           </Form.Item>
 
-          <Form.Item label="商品ID" name="id">
+          {/* <Form.Item label="商品ID" name="id">
             <Input />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item label="商品类型" name="kind" style={{ width: 200 }}>
-            <Select options={goodsTypeList}></Select>
+            <CategorySelect />
           </Form.Item>
 
           <Form.Item label=" ">

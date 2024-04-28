@@ -122,7 +122,7 @@ export async function searchGoodsList(
 ) {
   return await axiosInstance.get('/goods/list', {
     params: {
-      name,
+      name: name?.trim(),
       id,
       kind,
       pageNo,
@@ -139,8 +139,7 @@ export async function inventoryList(
   return await axiosInstance.get('/shelf-request/list', {
     params: {
       username: form.username,
-      goodsName: form.meetingRoomName,
-      goodsId: form.meetingRoomPosition,
+      goodsName: form.goodsName?.trim(),
       goodsType: form.goodsType,
       pageNo: pageNo,
       pageSize: pageSize,
@@ -149,7 +148,7 @@ export async function inventoryList(
 }
 
 export async function unbind(id: number) {
-  return await axiosInstance.get('/inventory/unbind/' + id);
+  return await axiosInstance.get('/shelf-request/unbind/' + id);
 }
 
 export async function createSaleOrder(data) {

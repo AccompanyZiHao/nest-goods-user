@@ -16,7 +16,6 @@ import { inventoryList, unbind } from '../../interface/interfaces';
 import { GoodsSearchResult } from '../goods-list/index';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { getCategoryList } from '../../const/category';
 import { getUserInfo } from '../user-info';
 import { CategorySelect } from './CategorySelect';
 
@@ -27,11 +26,11 @@ export interface SearchForm {
 }
 
 interface OnSaleListResult {
-  id: number;
+  request_id: number;
   startTime: string;
   endTime: string;
   request_status: number;
-  note: string;
+  refuse_reason: string;
   createTime: string;
   updateTime: string;
   goods: GoodsSearchResult;
@@ -57,7 +56,7 @@ export function OnSaleList() {
       setList(
         data.list.map((item: OnSaleListResult) => {
           return {
-            key: item.id,
+            key: item.request_id,
             ...item,
           };
         })
@@ -130,7 +129,7 @@ export function OnSaleList() {
     },
     {
       title: '备注',
-      dataIndex: 'note',
+      dataIndex: 'refuse_reason',
     },
     {
       title: '操作',
@@ -140,7 +139,7 @@ export function OnSaleList() {
             <Popconfirm
               title="撤回申请"
               description="确认解除吗？"
-              onConfirm={() => changeStatus(record.id)}
+              onConfirm={() => changeStatus(record.request_id)}
               okText="Yes"
               cancelText="No"
             >
