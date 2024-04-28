@@ -88,10 +88,11 @@ export const UserInfo = () => {
 function Logout() {
   const navigate = useNavigate();
   const logoutHandle = async() => {
-    // const res = await logoutApi();
-    // const { data } = res;
-    // console.log('data:===', data);
-    sessionStorage.clear();
+     await logoutApi();
+     // const { data } = res;
+     // console.log('data:===', data);
+     sessionStorage.clear();
+     localStorage.clear();
     navigate('login');
   };
   return <div onClick={logoutHandle}>退出</div>;

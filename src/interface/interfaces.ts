@@ -160,5 +160,5 @@ export async function categoryList() {
 }
 
 export async function logout() {
-  return await axios.post('user/logout');
+  return await axiosInstance.post('/user/logout');
 }
