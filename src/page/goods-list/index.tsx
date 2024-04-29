@@ -1,29 +1,11 @@
-import {
-  Badge,
-  Button,
-  Form,
-  Input,
-  Image,
-  Select,
-  Table,
-  message,
-  Modal,
-  Tag,
-} from 'antd';
+import { Badge, Button, Form, Input, Image, Select, Table, message, Modal, Tag } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import './index.css';
 import { ColumnsType } from 'antd/es/table';
 import { useForm } from 'antd/es/form/Form';
-import {
-  createSaleOrder,
-  searchGoodsList,
-  unbind,
-} from '../../interface/interfaces';
+import { createSaleOrder, searchGoodsList, unbind } from '../../interface/interfaces';
 import { CreateModal } from './create-modal';
-import {
-  CategorySelect,
-  getLocalCategoryData,
-} from '../operate-history/CategorySelect';
+import { CategorySelect, getLocalCategoryData } from '../operate-history/CategorySelect';
 import { BASE_URL, DEFAULT_IMAGE } from '../../const/base';
 import dayjs from 'dayjs';
 
@@ -39,6 +21,7 @@ export interface GoodsSearchResult {
   kind: number;
   img: string;
   num: number;
+  saleNum: number;
   sellPrice: string;
   description: string;
   isSale: boolean;
@@ -47,13 +30,18 @@ export interface GoodsSearchResult {
 }
 
 export function GoodsList() {
+  // 列表数据
+  const [goodsResult, setGoodsResult] = useState<Array<GoodsSearchResult>>([]);
   const [pageNo, setPageNo] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [currentGoods, setCurrentGoods] = useState<GoodsSearchResult>();
 
-  const [goodsResult, setGoodsResult] = useState<Array<GoodsSearchResult>>([]);
+  // 显示显示上下架弹窗
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  // 上下架弹窗类型 2 下架 1 上架
+  const [modalType, setModalType] = useState<2 | 1>();
+  // 当前选中的商品信息
+  const [currentGoods, setCurrentGoods] = useState<GoodsSearchResult>();
 
   const columns: ColumnsType<GoodsSearchResult> = useMemo(
     () => [
@@ -86,6 +74,14 @@ export function GoodsList() {
         dataIndex: 'sellPrice',
       },
       {
+        title: '商品数量',
+        dataIndex: 'num',
+      },
+      {
+        title: '已上架数量',
+        dataIndex: 'saleNum',
+      },
+      {
         title: '描述',
         dataIndex: 'description',
       },
@@ -93,36 +89,34 @@ export function GoodsList() {
         title: '添加时间',
         dataIndex: 'createTime',
         render(_, record) {
-          return dayjs(new Date(record.createTime)).format(
-            'YYYY-MM-DD hh:mm:ss'
-          );
+          return dayjs(new Date(record.createTime)).format('YYYY-MM-DD hh:mm:ss');
         },
       },
       {
         title: '上次更新时间',
         dataIndex: 'updateTime',
         render(_, record) {
-          return dayjs(new Date(record.updateTime)).format(
-            'YYYY-MM-DD hh:mm:ss'
-          );
+          return dayjs(new Date(record.updateTime)).format('YYYY-MM-DD hh:mm:ss');
         },
       },
       {
         title: '上架状态',
         dataIndex: 'isSale',
-        render: (_, record) =>
-          record.isSale ? <Tag color="success">已上架</Tag> : <Tag>未上架</Tag>,
+        render: (_, record) => (record.isSale ? <Tag color="success">已上架</Tag> : <Tag>未上架</Tag>),
       },
       {
         title: '操作',
         render: (_, record) => (
-          <div onClick={() => onSaleHandler(record, record.isSale)}>
-            {record.isSale ? (
-              <Button danger type="primary">
+          <div>
+            {record.isSale && record.saleNum > 0 && (
+              <Button danger type="primary" onClick={() => onSaleHandler(record, 2)}>
                 下架
               </Button>
-            ) : (
-              <Button type="primary">上架</Button>
+            )}
+            {(!record.saleNum || record.saleNum < record.num) && (
+              <Button type="primary" onClick={() => onSaleHandler(record, 1)}>
+                上架
+              </Button>
             )}
           </div>
         ),
@@ -132,13 +126,7 @@ export function GoodsList() {
   );
 
   const searchGoods = async (values: SearchGoods, initPage?: number) => {
-    const res = await searchGoodsList(
-      values.name,
-      values.id,
-      values.kind,
-      initPage ? 1 : pageNo,
-      pageSize
-    );
+    const res = await searchGoodsList(values.name, values.id, values.kind, initPage ? 1 : pageNo, pageSize);
 
     const { data } = res.data;
     if (res.status === 201 || res.status === 200) {
@@ -172,39 +160,18 @@ export function GoodsList() {
     setPageSize(pageSize);
   }, []);
 
-  const { confirm } = Modal;
-  function onSaleHandler(record: GoodsSearchResult, status: boolean) {
-    if (status) {
-      confirm({
-        title: '提示',
-        content: `确定要下架商品【${record.name}】吗？`,
-        async onOk() {
-          const res = await createSaleOrder({
-            goodsId: record.id,
-            quantity: 0,
-            status: 2,
-          });
-          if (res.status === 201 || res.status === 200) {
-            message.success('下架成功');
-          }
-        },
-      });
-    } else {
-      setIsCreateModalOpen(true);
-      setCurrentGoods(record);
-    }
+  function onSaleHandler(record: GoodsSearchResult, type: 1 | 2) {
+    setModalType(type);
+
+    setIsCreateModalOpen(true);
+
+    setCurrentGoods(record);
   }
 
   return (
     <div id="goods-list-container">
       <div className="goods-form">
-        <Form
-          form={form}
-          onFinish={(e) => searchGoods(e, 1)}
-          name="search"
-          layout="inline"
-          colon={false}
-        >
+        <Form form={form} onFinish={(e) => searchGoods(e, 1)} name="search" layout="inline" colon={false}>
           <Form.Item label="商品名称" name="name">
             <Input />
           </Form.Item>
@@ -238,6 +205,7 @@ export function GoodsList() {
       </div>
       {currentGoods ? (
         <CreateModal
+          type={modalType}
           goods={currentGoods}
           isOpen={isCreateModalOpen}
           handleClose={() => {
