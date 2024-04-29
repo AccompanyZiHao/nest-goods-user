@@ -11,7 +11,7 @@ async function getCategoryList() {
   if (localData) {
     return Promise.resolve(JSON.parse(localData));
   } else {
-    const { data } = await categoryList();
+      const { data } = await categoryList();
 
     const list = data.data.list.map((item) => {
       return {

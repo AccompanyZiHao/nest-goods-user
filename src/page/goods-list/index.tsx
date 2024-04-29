@@ -63,6 +63,7 @@ export function GoodsList() {
       {
         title: '商品图片',
         dataIndex: 'img',
+        width: 120,
         render: (_, record) => (
           <div>
             <Image width={100} src={BASE_URL + (record.img || DEFAULT_IMAGE)} />
@@ -106,15 +107,16 @@ export function GoodsList() {
       },
       {
         title: '操作',
+        width: 160,
         render: (_, record) => (
           <div>
             {record.isSale && record.saleNum > 0 && (
-              <Button danger type="primary" onClick={() => onSaleHandler(record, 2)}>
+              <Button danger type="primary" size="small" onClick={() => onSaleHandler(record, 2)}>
                 下架
               </Button>
             )}
             {(!record.saleNum || record.saleNum < record.num) && (
-              <Button type="primary" onClick={() => onSaleHandler(record, 1)}>
+              <Button type="primary" size="small" onClick={() => onSaleHandler(record, 1)}>
                 上架
               </Button>
             )}

@@ -23,6 +23,8 @@ const layout2 = {
 export function Login() {
     const navigate = useNavigate();
 
+    sessionStorage.clear();
+
     const onFinish = useCallback(async (values: LoginUser) => {
         const res = await login(values.username, values.password);
 

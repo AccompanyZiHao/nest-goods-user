@@ -1,5 +1,5 @@
 {
-  "name": "nest-goods-admin",
+  "name": "nest-goods-user",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -13,6 +13,7 @@
     "@types/react-dom": "^18.2.7",
     "antd": "^5.8.3",
     "axios": "^1.4.0",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.11.10",
     "rc-menu": "^9.13.0",
     "react": "^18.2.0",
@@ -23,7 +24,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=4003 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

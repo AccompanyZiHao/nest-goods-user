@@ -113,10 +113,10 @@ export function OnSaleList() {
       dataIndex: 'request_status',
       render(_, record) {
         return {
-          1: <Tag color="processing">等待中</Tag>,
-          2: <Tag color="success">成功</Tag>,
-          3: <Tag color="error">失败</Tag>,
-          4: <Tag color="default">已取消</Tag>,
+          1: <Tag color="processing">审核中</Tag>,
+          2: <Tag color="success">审核通过</Tag>,
+          3: <Tag color="error">审核不通过</Tag>,
+          4: <Tag color="default">用户已撤消</Tag>,
         }[record.request_status];
       },
     },
@@ -133,6 +133,7 @@ export function OnSaleList() {
     },
     {
       title: '操作',
+      width: 160,
       render: (_, record) =>
         record.request_status === 1 ? (
           <div>

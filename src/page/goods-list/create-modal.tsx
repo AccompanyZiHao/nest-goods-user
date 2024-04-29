@@ -37,7 +37,7 @@ export function CreateModal(props: CreateModalProps) {
     });
 
     if (res.status === 201 || res.status === 200) {
-      message.success(text + '审核提交成功，请等待');
+      message.success(text + '审核提交成功，请等待审核');
       form.resetFields();
       props.handleClose();
     } else {

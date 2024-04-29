@@ -156,7 +156,12 @@ export async function createSaleOrder(data) {
 }
 
 export async function categoryList() {
-  return await axiosInstance.get('/category/list');
+  return await axiosInstance.get('/category/list', {
+    params: {
+      pageNo: 1,
+      pageSize: 100,
+    },
+  });
 }
 
 export async function logout() {
