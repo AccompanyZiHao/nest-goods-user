@@ -124,7 +124,7 @@ export function OnSaleList() {
       title: '上架时间',
       dataIndex: 'createTime',
       render(_, record) {
-        return dayjs(new Date(record.createTime)).format('YYYY-MM-DD hh:mm:ss');
+        return dayjs(new Date(record.createTime)).format('YYYY-MM-DD HH:mm:ss');
       },
     },
     {

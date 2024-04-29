@@ -89,14 +89,14 @@ export function GoodsList() {
         title: '添加时间',
         dataIndex: 'createTime',
         render(_, record) {
-          return dayjs(new Date(record.createTime)).format('YYYY-MM-DD hh:mm:ss');
+          return dayjs(new Date(record.createTime)).format('YYYY-MM-DD HH:mm:ss');
         },
       },
       {
         title: '上次更新时间',
         dataIndex: 'updateTime',
         render(_, record) {
-          return dayjs(new Date(record.updateTime)).format('YYYY-MM-DD hh:mm:ss');
+          return dayjs(new Date(record.updateTime)).format('YYYY-MM-DD HH:mm:ss');
         },
       },
       {
