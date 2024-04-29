@@ -1,15 +1,4 @@
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  Popconfirm,
-  Select,
-  Table,
-  Tag,
-  TimePicker,
-  message,
-} from 'antd';
+import { Button, DatePicker, Form, Input, Modal, Popconfirm, Select, Table, Tag, TimePicker, message } from 'antd';
 import { useEffect, useState } from 'react';
 import { useForm } from 'antd/es/form/Form';
 import { inventoryList, unbind } from '../../interface/interfaces';
@@ -30,26 +19,45 @@ interface OnSaleListResult {
   startTime: string;
   endTime: string;
   request_status: number;
+  request_type: number;
   refuse_reason: string;
   createTime: string;
   updateTime: string;
   goods: GoodsSearchResult;
 }
 
+const { confirm } = Modal;
+
+export const showConfirm = (
+  {
+    title = '提示',
+    content = '确认撤回这条申请吗？',
+  }: {
+    title?: string;
+    content?: string;
+  },
+  callback: () => void
+) => {
+  confirm({
+    title,
+    content: <div>{content}</div>,
+    onOk() {
+      callback();
+    },
+  });
+};
+
 export function OnSaleList() {
   const [pageNo, setPageNo] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [list, setList] = useState<Array<OnSaleListResult>>([]);
+  const [total, setTotal] = useState<number>();
   // 更新列表
   const [refresh, setRefresh] = useState(false);
 
   const searchHandle = async (values: SearchForm) => {
     const userInfo = await getUserInfo();
-    const res = await inventoryList(
-      { ...values, username: userInfo.username },
-      pageNo,
-      pageSize
-    );
+    const res = await inventoryList({ ...values, username: userInfo.username }, pageNo, pageSize);
 
     const { data } = res.data;
     if (res.status === 201 || res.status === 200) {
@@ -61,6 +69,8 @@ export function OnSaleList() {
           };
         })
       );
+
+      setTotal(data.totalCount);
     } else {
       message.error(data || '系统繁忙，请稍后再试');
     }
@@ -105,7 +115,14 @@ export function OnSaleList() {
     //   dataIndex: 'location',
     // },
     {
-      title: '上架数量',
+      title: '申请类型',
+      dataIndex: 'request_type',
+      render(_, record) {
+        return record.request_type === 1 ? '上架' : '下架';
+      },
+    },
+    {
+      title: '数量',
       dataIndex: 'request_quantity',
     },
     {
@@ -136,17 +153,16 @@ export function OnSaleList() {
       width: 160,
       render: (_, record) =>
         record.request_status === 1 ? (
-          <div>
-            <Popconfirm
-              title="撤回申请"
-              description="确认解除吗？"
-              onConfirm={() => changeStatus(record.request_id)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <a href="#">撤回申请</a>
-            </Popconfirm>
-          </div>
+          <Button
+            size="small"
+            onClick={() => {
+              showConfirm({}, () => {
+                changeStatus(record.request_id);
+              });
+            }}
+          >
+            撤回申请
+          </Button>
         ) : null,
     },
   ];
@@ -154,13 +170,7 @@ export function OnSaleList() {
   return (
     <div id="container">
       <div className="form">
-        <Form
-          form={form}
-          onFinish={searchHandle}
-          name="search"
-          layout="inline"
-          colon={false}
-        >
+        <Form form={form} onFinish={searchHandle} name="search" layout="inline" colon={false}>
           <Form.Item label="商品名称" name="goodsName">
             <Input />
           </Form.Item>
@@ -189,6 +199,7 @@ export function OnSaleList() {
             current: pageNo,
             pageSize: pageSize,
             onChange: changePage,
+            total,
           }}
         />
       </div>

@@ -5,14 +5,14 @@ import { MenuClickEventHandler } from "rc-menu/lib/interface";
 import { router } from "../..";
 
 const items: MenuProps['items'] = [
-    {
-        key: '1',
-        label: "商品列表"
-    },
-    {
-        key: '2',
-        label: "上架记录"
-    }
+  {
+    key: '1',
+    label: '商品列表',
+  },
+  {
+    key: '2',
+    label: '上/下架记录',
+  },
 ];
 
 const handleMenuItemClick: MenuClickEventHandler = (info) => {
