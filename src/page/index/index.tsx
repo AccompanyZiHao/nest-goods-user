@@ -8,7 +8,7 @@ export function Index() {
   return (
     <div id="index-container">
       <div className="header">
-        <h1 onClick={() => navigate('/')}>超市系统</h1>
+        <h1 onClick={() => navigate('/')}>超市系统-用户端</h1>
         <UserInfo />
       </div>
       <div className="body">
